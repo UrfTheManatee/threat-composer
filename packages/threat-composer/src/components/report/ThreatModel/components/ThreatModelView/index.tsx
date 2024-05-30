@@ -26,6 +26,7 @@ import { css } from '@emotion/react';
 import { FC, useEffect, useCallback, useState, ReactNode } from 'react';
 import { DataExchangeFormat, HasContentDetails, ViewNavigationEvent } from '../../../../../customTypes';
 import printStyles from '../../../../../styles/print';
+import downloadObjectAsDocx from '../../../../../utils/downloadObjectAsDocx';
 import downloadContentAsMarkdown from '../../../../../utils/downloadObjectAsMarkdown';
 import sanitizeHtml from '../../../../../utils/sanitizeHtml';
 import MarkdownViewer from '../../../../generic/MarkdownViewer';
@@ -107,6 +108,7 @@ const ThreatModelView: FC<ThreatModelViewProps> = ({
     downloadFileName && downloadContentAsMarkdown(content, downloadFileName);
   }, [content, downloadFileName]);
 
+
   const getNextStepButtons = useCallback(() => {
     const buttons: ReactNode[] = [];
     if (!hasContentDetails?.applicationInfo) {
@@ -155,6 +157,10 @@ const ThreatModelView: FC<ThreatModelViewProps> = ({
             {downloadFileName && showPrintDownloadButtons && <Button
               onClick={handleDownloadMarkdown}>
               Download as Markdown File
+            </Button>}
+            {downloadFileName && showPrintDownloadButtons && <Button
+              onClick={downloadObjectAsDocx}>
+              Download as Docx
             </Button>}
             {showPrintDownloadButtons && <Button variant="primary" onClick={onPrintButtonClick || (() => window.print())}>Print</Button>}
           </SpaceBetween>
