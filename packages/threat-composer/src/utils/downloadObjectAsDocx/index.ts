@@ -14,7 +14,7 @@
   limitations under the License.
  ******************************************************************************************************************** */
 
-import { HeadingLevel, Document, Packer, Paragraph, TextRun, ImageRun } from 'docx';
+import { HeadingLevel, Document, Packer, Paragraph } from 'docx';
 
 const downloadObjectAsDocx = (exportObj: any) => {
   // Function to generate the document
