@@ -23,14 +23,25 @@ export class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
-    this.pipeline = new PDKPipeline(this, 'ApplicationPipeline', {
-      primarySynthDirectory: 'packages/threat-composer-infra/cdk.out',
-      repositoryName: this.node.tryGetContext('repositoryName') || 'monorepo',
-      defaultBranchName: 'main',
-      publishAssetsInParallel: false,
-      crossAccountKeys: true,
-      synth: {},
-      sonarCodeScannerConfig: this.node.tryGetContext('sonarqubeScannerConfig'),
-    });
+    if (this.node.tryGetContext('useCodeCommit')) {
+      this.pipeline = new PDKPipeline(this, 'ApplicationPipeline', {
+        primarySynthDirectory: 'packages/threat-composer-infra/cdk.out',
+        repositoryName: this.node.tryGetContext('repositoryName') || 'monorepo',
+        defaultBranchName: 'main',
+        crossAccountKeys: true,
+        synth: {commands:['']},
+        sonarCodeScannerConfig: this.node.tryGetContext('sonarqubeScannerConfig'),
+      });
+    } else {
+      this.pipeline = new PDKPipeline(this, 'ApplicationPipeline', {
+        primarySynthDirectory: 'packages/threat-composer-infra/cdk.out',
+        repositoryOwnerAndName: this.node.tryGetContext('repositoryOwnerAndName'),
+        codestarConnectionArn: this.node.tryGetContext('codestarConnectionArn'),
+        defaultBranchName: 'main',
+        crossAccountKeys: true,
+        synth: {commands:['']},
+        sonarCodeScannerConfig: this.node.tryGetContext('sonarqubeScannerConfig'),
+      });
+    }
   }
 }

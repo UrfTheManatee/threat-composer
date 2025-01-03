@@ -1,5 +1,8 @@
 {
     "repositoryName": "threat_composer_monorepo",
+    "useCodeCommit": false,
+    "codestarConnectionArn": "",
+    "props.repositoryOwnerAndName": "",
     "accountPipeline": "",
     "accountDev": "",
     "cidrTypeDev": "IPV4",
