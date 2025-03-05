@@ -1,8 +1,8 @@
 {
     "repositoryName": "threat_composer_monorepo",
     "useCodeCommit": false,
-    "codestarConnectionArn": "",
-    "props.repositoryOwnerAndName": "",
+    "codestarConnectionArn": "arn:aws:codeconnections:ap-southeast-1:457934301993:connection/92a13fdd-8516-4880-abd6-d1f4ab185b32",
+    "repositoryOwnerAndName": "UrfTheManatee/testcomposer",
     "accountPipeline": "",
     "accountDev": "",
     "cidrTypeDev": "IPV4",
@@ -21,4 +21,5 @@
     "hostZoneNameProd": "",
     "lambdaEdgeProd": "",
     "cacheControlNoCache": "true"
+
 }

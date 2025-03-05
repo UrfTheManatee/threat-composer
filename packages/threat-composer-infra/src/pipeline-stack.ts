@@ -24,9 +24,11 @@ export class PipelineStack extends Stack {
     super(scope, id, props);
 
     const useCodeCommit = this.node.tryGetContext('useCodeCommit');
-    const repositoryName = this.node.tryGetContext('repositoryName') || 'monorepo';
-
+    const repositoryName = this.node.tryGetContext('repositoryName') || 'threat_composer_monorepo';
+    const repositoryOwnerAndName = this.node.tryGetContext('repositoryOwnerAndName');
+    const codestarConnectionArn = this.node.tryGetContext('codestarConnectionArn');
     if (useCodeCommit) {
+      // Using CodeCommit
       this.pipeline = new PDKPipeline(this, 'ApplicationPipeline', {
         primarySynthDirectory: 'packages/threat-composer-infra/cdk.out',
         repositoryName: repositoryName,
@@ -34,33 +36,43 @@ export class PipelineStack extends Stack {
         crossAccountKeys: true,
         useCodeCommit: true,
         sonarCodeScannerConfig: this.node.tryGetContext('sonarqubeScannerConfig'),
-        // Add the required CodeStar properties with default values
-        codestarConnectionArn: '', // Empty string since not using CodeStar
-        repositoryOwnerAndName: `dummy/${repositoryName}`, // Dummy value since not using CodeStar
+        // Required even for CodeCommit
+        codestarConnectionArn: '',
+        repositoryOwnerAndName: `dummy/${repositoryName}`,
       });
     } else {
-      // The error is happening here - repositoryOwnerAndName is undefined
-      // Let's properly define it with a fallback value
+      // Using CodeStar connection
 
-      // Get the context values with fallbacks
-      const repositoryOwnerAndName = this.node.tryGetContext('repositoryOwnerAndName');
-      const codestarConnectionArn = this.node.tryGetContext('codestarConnectionArn');
+      console.log('Context values:');
+      console.log('  useCodeCommit:', useCodeCommit);
+      console.log('  codestarConnectionArn:', codestarConnectionArn);
+      console.log('  repositoryOwnerAndName:', repositoryOwnerAndName);
 
-      // Create the pipeline with all required properties
+      // Validate required parameters
+      if (!codestarConnectionArn) {
+        throw new Error('codestarConnectionArn context value is required when useCodeCommit is false. ' +
+          'Either provide this value or set useCodeCommit to true.');
+      }
+
+      if (!repositoryOwnerAndName) {
+        throw new Error('repositoryOwnerAndName context value is required when useCodeCommit is false. ' +
+          'Format should be "owner/repo".');
+      }
+
+      // Extract the repository name from owner/repo format
+      const repoName = repositoryOwnerAndName.includes('/') ?
+        repositoryOwnerAndName.split('/')[1] :
+        repositoryName;
+
       this.pipeline = new PDKPipeline(this, 'ApplicationPipeline', {
         primarySynthDirectory: 'packages/threat-composer-infra/cdk.out',
-        repositoryOwnerAndName: repositoryOwnerAndName || 'dummy/repo', // Provide fallback
-        codestarConnectionArn: codestarConnectionArn || '', // Provide fallback
+        repositoryOwnerAndName: repositoryOwnerAndName,
+        codestarConnectionArn: codestarConnectionArn,
         defaultBranchName: 'main',
         crossAccountKeys: true,
         useCodeCommit: false,
         sonarCodeScannerConfig: this.node.tryGetContext('sonarqubeScannerConfig'),
-        // Safely determine repository name with null checks
-        repositoryName: repositoryOwnerAndName ?
-          (repositoryOwnerAndName.includes('/') ?
-            repositoryOwnerAndName.split('/')[1] :
-            repositoryOwnerAndName) :
-          'dummy-repo',
+        repositoryName: repoName,
       });
     }
   }
