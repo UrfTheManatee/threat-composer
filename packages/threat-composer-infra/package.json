@@ -38,7 +38,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@aws/pdk": "/Users/kaufluca/Documents/repos/aws-pdk",
+    "@aws/pdk": "/home/ec2-user/aws-pdk/packages/pdk/dist/js/",
     "aws-cdk-lib": "^2.128.0",
     "cdk-nag": "^2.28.41",
     "constructs": "^10.0.5"

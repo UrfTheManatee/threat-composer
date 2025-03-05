@@ -28,7 +28,7 @@
     "synth-workspace": "yarn projen"
   },
   "devDependencies": {
-    "@aws/pdk": "/Users/kaufluca/Documents/repos/aws-pdk",
+    "@aws/pdk": "/home/ec2-user/aws-pdk",
     "@types/node": "^18",
     "@typescript-eslint/eslint-plugin": "^6",
     "@typescript-eslint/parser": "^6",

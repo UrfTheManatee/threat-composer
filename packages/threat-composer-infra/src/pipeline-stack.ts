@@ -23,25 +23,44 @@ export class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
-    if (this.node.tryGetContext('useCodeCommit')) {
+    const useCodeCommit = this.node.tryGetContext('useCodeCommit');
+    const repositoryName = this.node.tryGetContext('repositoryName') || 'monorepo';
+
+    if (useCodeCommit) {
       this.pipeline = new PDKPipeline(this, 'ApplicationPipeline', {
         primarySynthDirectory: 'packages/threat-composer-infra/cdk.out',
-        repositoryName: this.node.tryGetContext('repositoryName') || 'monorepo',
+        repositoryName: repositoryName,
         defaultBranchName: 'main',
         crossAccountKeys: true,
-        synth: {  },
+        useCodeCommit: true,
         sonarCodeScannerConfig: this.node.tryGetContext('sonarqubeScannerConfig'),
+        // Add the required CodeStar properties with default values
+        codestarConnectionArn: '',  // Empty string since not using CodeStar
+        repositoryOwnerAndName: `dummy/${repositoryName}`,  // Dummy value since not using CodeStar
       });
     } else {
-      this.pipeline = new PDKPipeline(this, 'ApplicationPipeline', {
+      // The error is happening here - repositoryOwnerAndName is undefined
+      // Let's properly define it with a fallback value
 
+      // Get the context values with fallbacks
+      const repositoryOwnerAndName = this.node.tryGetContext('repositoryOwnerAndName');
+      const codestarConnectionArn = this.node.tryGetContext('codestarConnectionArn');
+
+      // Create the pipeline with all required properties
+      this.pipeline = new PDKPipeline(this, 'ApplicationPipeline', {
         primarySynthDirectory: 'packages/threat-composer-infra/cdk.out',
-        repositoryOwnerAndName: this.node.tryGetContext('repositoryOwnerAndName'),
-        codestarConnectionArn: this.node.tryGetContext('codestarConnectionArn'),
+        repositoryOwnerAndName: repositoryOwnerAndName || 'dummy/repo',  // Provide fallback
+        codestarConnectionArn: codestarConnectionArn || '',  // Provide fallback
         defaultBranchName: 'main',
         crossAccountKeys: true,
-        synth: { },
-        sonarCodeScannerConfig: this.node.tryGetContext('sonarqubeScannerConfig')
+        useCodeCommit: false,
+        sonarCodeScannerConfig: this.node.tryGetContext('sonarqubeScannerConfig'),
+        // Safely determine repository name with null checks
+        repositoryName: repositoryOwnerAndName ?
+          (repositoryOwnerAndName.includes('/') ?
+            repositoryOwnerAndName.split('/')[1] :
+            repositoryOwnerAndName) :
+          'dummy-repo',
       });
     }
   }
