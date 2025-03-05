@@ -13,12 +13,19 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  ******************************************************************************************************************** */
-import { App } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
-import { PipelineStack } from '../src/pipeline-stack';
-
 test('Snapshot', () => {
-  const app = new App();
+  const app = new App({
+    context: {
+      // Option 1: Set useCodeCommit to true
+      useCodeCommit: true,
+
+      // OR Option 2: Provide both required parameters
+      // useCodeCommit: false,
+      // codestarConnectionArn: 'arn:aws:codestar-connections:region:account:connection/example-id',
+      // repositoryOwnerAndName: 'owner/repo-name'
+    }
+  });
+
   const stack = new PipelineStack(app, 'pipeline-test', {
     env: {
       account: process.env.CDK_DEFAULT_ACCOUNT!,
