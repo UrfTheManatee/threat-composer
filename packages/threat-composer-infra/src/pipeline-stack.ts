@@ -35,8 +35,8 @@ export class PipelineStack extends Stack {
         useCodeCommit: true,
         sonarCodeScannerConfig: this.node.tryGetContext('sonarqubeScannerConfig'),
         // Add the required CodeStar properties with default values
-        codestarConnectionArn: '',  // Empty string since not using CodeStar
-        repositoryOwnerAndName: `dummy/${repositoryName}`,  // Dummy value since not using CodeStar
+        codestarConnectionArn: '', // Empty string since not using CodeStar
+        repositoryOwnerAndName: `dummy/${repositoryName}`, // Dummy value since not using CodeStar
       });
     } else {
       // The error is happening here - repositoryOwnerAndName is undefined
@@ -49,8 +49,8 @@ export class PipelineStack extends Stack {
       // Create the pipeline with all required properties
       this.pipeline = new PDKPipeline(this, 'ApplicationPipeline', {
         primarySynthDirectory: 'packages/threat-composer-infra/cdk.out',
-        repositoryOwnerAndName: repositoryOwnerAndName || 'dummy/repo',  // Provide fallback
-        codestarConnectionArn: codestarConnectionArn || '',  // Provide fallback
+        repositoryOwnerAndName: repositoryOwnerAndName || 'dummy/repo', // Provide fallback
+        codestarConnectionArn: codestarConnectionArn || '', // Provide fallback
         defaultBranchName: 'main',
         crossAccountKeys: true,
         useCodeCommit: false,
